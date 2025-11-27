@@ -1,0 +1,320 @@
+
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Moodle2 CUCEI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link href="https://fonts.cdnfonts.com/css/open-dyslexic" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              primary: '#0d69f2',
+              secondary: '#475569',
+              background: {
+                light: '#f3f4f6',
+                dark: '#0f172a',
+              },
+              surface: {
+                light: '#ffffff',
+                dark: '#1e293b',
+              }
+            },
+            fontFamily: {
+              sans: ['Lexend', 'sans-serif'],
+              dyslexic: ['Open-Dyslexic', 'sans-serif'],
+            },
+            keyframes: {
+              'fade-in-up': {
+                '0%': { opacity: '0', transform: 'translateY(10px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              },
+              'fade-in': {
+                '0%': { opacity: '0' },
+                '100%': { opacity: '1' },
+              }
+            },
+            animation: {
+              'fade-in-up': 'fade-in-up 0.3s ease-out',
+              'fade-in': 'fade-in 0.3s ease-out'
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body {
+        transition: background-color 0.3s, color 0.3s, filter 0.3s;
+      }
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      
+      /* --- Accessibility Modes --- */
+
+      /* High Contrast (Yellow/Black) */
+      .high-contrast {
+        background-color: #000000 !important;
+        color: #ffff00 !important;
+      }
+      .high-contrast * {
+        background-color: #000000 !important;
+        color: #ffff00 !important;
+        border-color: #ffff00 !important;
+        fill: #ffff00 !important;
+      }
+      .high-contrast img, .high-contrast .video-container {
+        filter: grayscale(100%) contrast(150%);
+      }
+
+      /* Invert */
+      .invert-mode {
+        filter: invert(100%);
+      }
+      .invert-mode img, .invert-mode video {
+        filter: invert(100%); /* Re-invert images to look normal */
+      }
+
+      /* Sepia */
+      .sepia-mode {
+        filter: sepia(100%);
+      }
+
+      /* Grayscale */
+      .grayscale-mode {
+        filter: grayscale(100%);
+      }
+
+      /* Low Brightness */
+      .low-brightness {
+        filter: brightness(70%);
+      }
+
+      /* Low Saturation (Soft Colors) */
+      .low-saturation {
+        filter: saturate(50%) contrast(90%);
+      }
+
+      /* Color Blindness Filters (SVG reference) */
+      .protanopia { filter: url('#protanopia-filter'); }
+      .deuteranopia { filter: url('#deuteranopia-filter'); }
+      .tritanopia { filter: url('#tritanopia-filter'); }
+
+      /* Text Adjustments */
+      /* CRITICAL FIX: Exclude material icons from dyslexia font to prevent broken icons */
+      .font-dyslexic *:not(.material-symbols-outlined) {
+        font-family: 'Open-Dyslexic', sans-serif !important;
+      }
+      .line-spacing-wide * { line-height: 2 !important; }
+      .line-spacing-widest * { line-height: 3 !important; }
+      .letter-spacing-wide * { letter-spacing: 0.1em !important; }
+      .paragraph-spacing-wide p { margin-bottom: 2em !important; }
+      .text-align-justify { text-align: justify !important; }
+      .text-align-center { text-align: center !important; }
+      
+      /* Highlight Titles */
+      .highlight-titles h1, .highlight-titles h2, .highlight-titles h3, .highlight-titles h4 {
+        background-color: #d1fae5 !important;
+        color: #065f46 !important;
+        padding: 0.2em;
+        border-radius: 4px;
+        text-decoration: underline;
+        text-decoration-style: dotted;
+      }
+      .dark .highlight-titles h1, .dark .highlight-titles h2 {
+        background-color: #064e3b !important;
+        color: #ecfdf5 !important;
+      }
+
+      /* Highlight Links */
+      .highlight-links a, .highlight-links button {
+        text-decoration: underline !important;
+        text-decoration-color: yellow !important;
+        text-decoration-thickness: 3px !important;
+        background-color: rgba(255, 255, 0, 0.2);
+        font-weight: bold;
+      }
+      .underline-links a, .underline-links button {
+        text-decoration: underline !important;
+      }
+
+      /* Interaction */
+      .large-buttons button, .large-buttons a {
+        padding: 1.5rem !important;
+        font-size: 1.2rem !important;
+      }
+      .large-click-area button, .large-click-area a {
+        position: relative;
+      }
+      .large-click-area button::after, .large-click-area a::after {
+        content: '';
+        position: absolute;
+        top: -15px; bottom: -15px; left: -15px; right: -15px;
+      }
+      .hide-images img, .hide-images [role="img"] {
+        opacity: 0 !important;
+        visibility: hidden !important;
+      }
+      .stop-animations *, .stop-animations *::before, .stop-animations *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+      .safe-click button, .safe-click a {
+        transition: transform 0.2s ease-in-out !important;
+      }
+      .safe-click button:active, .safe-click a:active {
+        transform: scale(0.95);
+        background-color: #dbeafe !important; 
+      }
+      
+      /* Keyboard Nav / Visible Focus */
+      .keyboard-nav *:focus {
+        outline: 4px solid #ff0000 !important;
+        outline-offset: 4px !important;
+      }
+
+      /* Reading Guide Bar */
+      .reading-guide {
+        position: fixed;
+        pointer-events: none;
+        width: 100vw;
+        height: 40px;
+        background: rgba(255, 255, 0, 0.3);
+        border-top: 2px solid red;
+        border-bottom: 2px solid red;
+        z-index: 99999;
+        top: 50%;
+        transform: translateY(-50%);
+        display: none;
+        left: 0;
+      }
+      
+      /* Large Cursor */
+      .cursor-large, .cursor-large * {
+        cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="black" stroke="white" stroke-width="2"><path d="M5.5 3.21V20.8c0 .45.54.67.85.35l4.86-4.86a.5.5 0 0 1 .35-.15h6.87a.5.5 0 0 0 .35-.85L6.35 2.85a.5.5 0 0 0-.85.35Z"/></svg>'), auto !important;
+      }
+
+      /* Immersive Reader */
+      .immersive-reader header, .immersive-reader aside, .immersive-reader .immersive-hide {
+        display: none !important;
+      }
+      .immersive-reader main {
+        width: 100% !important;
+        max-width: 800px !important;
+        margin: 0 auto !important;
+        font-size: 1.5rem !important;
+        line-height: 2 !important;
+      }
+
+      /* Cognitive Modes */
+      
+      /* Focus Mode: Dims everything not hovered */
+      .focus-mode body:has(:hover) *:not(:hover):not(:hover *) {
+        opacity: 0.5;
+        filter: blur(1px);
+        transition: opacity 0.2s, filter 0.2s;
+      }
+      
+      /* Simplified Text */
+      .simplified-text *:not(.material-symbols-outlined) {
+        font-family: Arial, sans-serif !important;
+        font-weight: 500 !important;
+      }
+      .simplified-text h1, .simplified-text h2, .simplified-text h3 {
+        color: #2563eb !important; /* Force Blue Headers */
+      }
+
+      /* Block Reading */
+      .block-reading p, .block-reading li {
+        border: 1px solid #cbd5e1;
+        padding: 10px;
+        margin-bottom: 10px !important;
+        border-radius: 4px;
+        background-color: rgba(255,255,255,0.05);
+      }
+
+      /* Glossary (Simulation) */
+      .glossary-enabled p {
+        cursor: help;
+      }
+      
+      /* Iconography: Adds icons to common elements */
+      .iconography h1::before { content: '📌 '; }
+      .iconography h2::before { content: '📍 '; }
+      .iconography h3::before { content: '👉 '; }
+      .iconography a::before { content: '🔗 '; }
+      .iconography button::before { content: '🔘 '; }
+
+      /* Skip Link */
+      .skip-link {
+        position: absolute;
+        top: -100px;
+        left: 0;
+        background: #000;
+        color: white;
+        padding: 10px;
+        z-index: 100;
+        transition: top 0.3s;
+      }
+      .skip-link:focus {
+        top: 0;
+      }
+      
+      /* File Upload Dashed Border Animation */
+      @keyframes dash {
+        to { background-position: 100% 0; }
+      }
+      .animate-border {
+        background-image: linear-gradient(90deg, silver 50%, transparent 50%), linear-gradient(90deg, silver 50%, transparent 50%), linear-gradient(0deg, silver 50%, transparent 50%), linear-gradient(0deg, silver 50%, transparent 50%);
+        background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+        background-size: 15px 2px, 15px 2px, 2px 15px, 2px 15px;
+        background-position: 0 0, 0 100%, 0 0, 100% 0;
+        animation: dash 1s linear infinite;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/"
+  }
+}
+</script>
+</head>
+  <body>
+    <!-- SVG Filters for Color Blindness -->
+    <svg style="display: none;">
+      <defs>
+        <filter id="protanopia-filter">
+          <feColorMatrix type="matrix" values="0.567, 0.433, 0, 0, 0 0.558, 0.442, 0, 0, 0 0, 0.242, 0.758, 0, 0 0, 0, 0, 1, 0" />
+        </filter>
+        <filter id="deuteranopia-filter">
+          <feColorMatrix type="matrix" values="0.625, 0.375, 0, 0, 0 0.7, 0.3, 0, 0, 0 0, 0.3, 0.7, 0, 0 0, 0, 0, 1, 0" />
+        </filter>
+        <filter id="tritanopia-filter">
+          <feColorMatrix type="matrix" values="0.95, 0.05, 0, 0, 0 0, 0.433, 0.567, 0, 0 0, 0.475, 0.525, 0, 0 0, 0, 0, 1, 0" />
+        </filter>
+      </defs>
+    </svg>
+
+    <div id="reading-guide-bar" class="reading-guide"></div>
+    <div id="root"></div>
+    <script>
+      document.addEventListener('mousemove', (e) => {
+        const guide = document.getElementById('reading-guide-bar');
+        if(guide && guide.style.display === 'block') {
+          guide.style.top = e.clientY + 'px';
+        }
+      });
+    </script>
+  </body>
+</html>
