@@ -329,13 +329,10 @@ const App: React.FC = () => {
     }
   };
 
-  // --- Auth Render Guard ---
-  if (!user) {
-    return <LoginView onLogin={(loggedInUser) => setUser(loggedInUser)} />;
-  }
-
   // View Rendering
   const renderView = () => {
+    if (!user) return null; // Should be handled by main return structure now
+
     const { view, params } = currentNavState;
 
     switch (view) {
@@ -346,7 +343,7 @@ const App: React.FC = () => {
             onEventSelect={(e) => handleCourseSelect(appCourses.find(c => c.id === e.courseId)!)} 
             onDateSelect={handleDateSelect}
             onNavigateToGrading={() => navigateTo('grading-view')}
-            onNavigateToCourseDetail={() => handleCourseSelect(appCourses[0])} // Just picking first for demo
+            onNavigateToCourseDetail={() => handleCourseSelect(appCourses[0])}
             onCreateAnnouncement={handleCreateAnnouncement}
             announcements={announcements}
             notifications={profNotifications}
@@ -388,18 +385,9 @@ const App: React.FC = () => {
   }));
 
   return (
-    <div className="flex h-screen bg-background-light dark:bg-background-dark text-gray-900 dark:text-gray-100 transition-colors duration-200 overflow-hidden relative">
-      {settings.skipToContent && <a href="#main-content" className="skip-link">Saltar al contenido principal</a>}
-      
-      <Sidebar 
-        currentView={currentNavState.view} 
-        setView={(v) => navigateTo(v, undefined, undefined, true)} 
-        isMobileOpen={isMobileNavOpen} 
-        closeMobile={() => setIsMobileNavOpen(false)}
-        onLogout={() => { setUser(null); setHistory([{ view: 'dashboard' }]); }}
-      />
-      
-      <button onClick={() => setIsAccessibilityOpen(true)} className="fixed bottom-6 right-6 z-40 w-16 h-16 bg-primary hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-110 focus:outline-none focus:ring-4 focus:ring-blue-300" aria-label="Opciones de Accesibilidad">
+    <>
+      {/* Global Accessibility UI - Always Visible */}
+      <button onClick={() => setIsAccessibilityOpen(true)} className="fixed bottom-6 right-6 z-50 w-16 h-16 bg-primary hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-110 focus:outline-none focus:ring-4 focus:ring-blue-300" aria-label="Opciones de Accesibilidad">
         <span className="material-symbols-outlined text-4xl">accessibility_new</span>
       </button>
 
@@ -413,31 +401,48 @@ const App: React.FC = () => {
         resetSettings={() => setSettings({ ...settings, fontSize: 1, darkMode: false, highContrast: false, grayscale: false, invertColors: false, dyslexiaFont: false })} 
       />
 
-      <div className="flex-1 flex flex-col overflow-hidden relative">
-        <Header 
-          user={user} 
-          notifications={user.userRole === 'student' ? notifications : profNotifications} 
-          onMenuClick={() => setIsMobileNavOpen(true)} 
-          onAccessibilityClick={() => setIsAccessibilityOpen(true)} 
-          onNavigateToProfile={() => navigateTo('profile', undefined, 'Perfil')}
-          onNavigateToMessages={() => navigateTo('messages', undefined, 'Mensajes')}
-          onNavigateToSettings={() => navigateTo('settings', undefined, 'Configuración')}
-          onNavigateToNotifications={() => navigateTo('notifications', undefined, 'Notificaciones')}
-          onNotificationClick={handleNotificationClick}
-          onDeleteNotification={(id) => setNotifications(n => n.filter(x => x.id !== id))}
-          onMarkAllRead={() => setNotifications(n => n.map(x => ({...x, read: true})))}
-          onMarkUnread={(id) => setNotifications(n => n.map(x => x.id === id ? {...x, read: false} : x))}
-          canGoBack={historyIndex > 0} 
-          canGoForward={historyIndex < history.length - 1} 
-          onGoBack={goBack} 
-          onGoForward={goForward}
-          breadcrumbs={settings.breadcrumbs ? breadcrumbs : []}
-        />
-        <main id="main-content" className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50/50 dark:bg-[#0f172a] p-4 md:p-8 relative scroll-smooth" tabIndex={-1}>
-           {renderView()}
-        </main>
-      </div>
-    </div>
+      {/* Main View Switcher */}
+      {!user ? (
+        <LoginView onLogin={(loggedInUser) => setUser(loggedInUser)} />
+      ) : (
+        <div className="flex h-screen bg-background-light dark:bg-background-dark text-gray-900 dark:text-gray-100 transition-colors duration-200 overflow-hidden relative">
+          {settings.skipToContent && <a href="#main-content" className="skip-link">Saltar al contenido principal</a>}
+          
+          <Sidebar 
+            currentView={currentNavState.view} 
+            setView={(v) => navigateTo(v, undefined, undefined, true)} 
+            isMobileOpen={isMobileNavOpen} 
+            closeMobile={() => setIsMobileNavOpen(false)}
+            onLogout={() => { setUser(null); setHistory([{ view: 'dashboard' }]); }}
+          />
+          
+          <div className="flex-1 flex flex-col overflow-hidden relative">
+            <Header 
+              user={user} 
+              notifications={user.userRole === 'student' ? notifications : profNotifications} 
+              onMenuClick={() => setIsMobileNavOpen(true)} 
+              onAccessibilityClick={() => setIsAccessibilityOpen(true)} 
+              onNavigateToProfile={() => navigateTo('profile', undefined, 'Perfil')}
+              onNavigateToMessages={() => navigateTo('messages', undefined, 'Mensajes')}
+              onNavigateToSettings={() => navigateTo('settings', undefined, 'Configuración')}
+              onNavigateToNotifications={() => navigateTo('notifications', undefined, 'Notificaciones')}
+              onNotificationClick={handleNotificationClick}
+              onDeleteNotification={(id) => setNotifications(n => n.filter(x => x.id !== id))}
+              onMarkAllRead={() => setNotifications(n => n.map(x => ({...x, read: true})))}
+              onMarkUnread={(id) => setNotifications(n => n.map(x => x.id === id ? {...x, read: false} : x))}
+              canGoBack={historyIndex > 0} 
+              canGoForward={historyIndex < history.length - 1} 
+              onGoBack={goBack} 
+              onGoForward={goForward}
+              breadcrumbs={settings.breadcrumbs ? breadcrumbs : []}
+            />
+            <main id="main-content" className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50/50 dark:bg-[#0f172a] p-4 md:p-8 relative scroll-smooth" tabIndex={-1}>
+              {renderView()}
+            </main>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
